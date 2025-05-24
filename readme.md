@@ -7,7 +7,7 @@ We need to stand up, fight back, and stop the flood of fascism into the U.S. gov
 
 ## 🚨 Why IceShield Exists
 
-IceShield was created in response to the growing threat of state-sponsored reporting systems that target **innocent immigrants and their families**. **Our mission is simple: flood these forms nonstop with false information** By generating massive amounts of fake submissions, we make it nearly impossible for authorities to distinguish real reports from generated ones, thus protecting vulnerable communities.
+IceShield was created in response to the growing threat of state-sponsored reporting systems that target not only **innocent immigrants and their families** but anyone who is here **LEGALLY** as this regime does not care about legal status, they care about the color of your skin and the language you may speak. **Our mission is simple: flood these forms nonstop with false information** By generating massive amounts of fake submissions, we make it nearly impossible for authorities to distinguish real reports from generated ones, thus protecting vulnerable communities.
 
 ---
 
