@@ -129,9 +129,9 @@ The script automatically handles:
 
 ---
 
-## 🐞 Known Issues
+## 🐞 Known Bugs & Issues
 
-IceShield is actively developed. Report bugs or issues:
+IceShield has been in development for serveral weeks and is still in active development. 
 
 - **CAPTCHA dependency**: Manual input required when API solving fails
 - **Form-specific compatibility**: Some immigration forms may need custom field detection
