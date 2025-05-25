@@ -87,7 +87,7 @@ To protect your identity while using IceShield, **always** connect through a VPN
 
 3: **Configure Captcha API** (optional but recommended for automation):
    - Click "Captcha API Config" in the IceShield panel
-   - Choose your provider (2captcha, Anti-Captcha, or CapMonster)
+   - Choose your provider (2captcha or NoCaptcha)
    - Enter your API key
    - Enable auto-solve mode
 
