@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IceShield
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.Hotfix
 // @description  Form Automation for website testing
 // @author       KirbySoftware
 // @match        https://*.ice.gov/*
@@ -2748,53 +2748,12 @@
 
         // Get street name and city that are appropriate for the country
         const streetName = getRandomElement(countryData.streetNames);
-        const city = getRandomElement(countryData.cities);        // Generate postal code in format appropriate for the selected country
-        let zip;
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Define letters outside switch for reuse
-
-        // Assign postal code format based on country patterns
-        switch (countryData.postalFormat) {
-            case 'UK':
-                // UK-style postal code (alphanumeric)
-                zip = letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      Math.floor(Math.random() * 10) +
-                      ' ' +
-                      Math.floor(Math.random() * 10) +
-                      letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      letters.charAt(Math.floor(Math.random() * letters.length));
-                break;
-            case 'Canada':
-                // Canadian postal code (letter-number-letter number-letter-number)
-                zip = letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      Math.floor(Math.random() * 10) +
-                      letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      ' ' +
-                      Math.floor(Math.random() * 10) +
-                      letters.charAt(Math.floor(Math.random() * letters.length)) +
-                      Math.floor(Math.random() * 10);
-                break;
-            case 'Japan':
-                // Japanese postal code (3-digit dash 4-digit)
-                zip = (Math.floor(Math.random() * 900) + 100) + '-' +
-                      (Math.floor(Math.random() * 9000) + 1000);
-                break;
-            case 'digits4':
-                // 4-digit postal code
-                zip = Math.floor(Math.random() * 9000) + 1000;
-                break;
-            case 'digits5':
-                // 5-digit postal code
-                zip = Math.floor(Math.random() * 90000) + 10000;
-                break;
-            case 'digits6':
-                // 6-digit postal code
-                zip = Math.floor(Math.random() * 900000) + 100000;
-                break;
-            default:
-                // Default to 5-digit postal code
-                zip = Math.floor(Math.random() * 90000) + 10000;
-        }
+        const city = getRandomElement(countryData.cities);        // Generate postal code - OVERRIDE: Always use 5-digit numeric zip codes for all international addresses
+        // This ensures all zip codes are US-style 5-digit numbers regardless of country
+        let zip = Math.floor(Math.random() * 90000) + 10000;
+        
+        // Ensure zip is exactly 5 digits and numeric only
+        zip = zip.toString().padStart(5, '0');
 
         // Optional apartment/building details (40% chance for international addresses)
         let line2 = '';
@@ -4314,13 +4273,17 @@
         const line1Field = document.querySelector('input[name*="line1" i], input[name*="address1" i], input[placeholder*="line 1" i], input[name*="street" i]');
         const line2Field = document.querySelector('input[name*="line2" i], input[name*="address2" i], input[placeholder*="line 2" i], input[name*="apt" i]');
         const cityField = document.querySelector('input[name*="city" i], input[placeholder*="city" i]');
-        const zipField = document.querySelector('input[name*="zip" i], input[name*="postal" i], input[placeholder*="zip" i], input[placeholder*="postal" i]');
-
-        // Fill common fields
+        const zipField = document.querySelector('input[name*="zip" i], input[name*="postal" i], input[placeholder*="zip" i], input[placeholder*="postal" i]');        // Fill common fields
         if (line1Field) line1Field.value = address.line1;
         if (line2Field) line2Field.value = address.line2;
         if (cityField) cityField.value = address.city;
-        if (zipField) zipField.value = address.zip;
+        if (zipField) {
+            // Ensure zip code is exactly 5 digits and numeric only (override international postal codes)
+            const zipCode = address.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+            // Truncate if longer than 5 digits
+            const formattedZip = zipCode.substring(0, 5);
+            zipField.value = formattedZip;
+        }
 
         // Trigger input events for these fields
         [line1Field, line2Field, cityField, zipField].forEach(triggerInputEvent);
@@ -4340,30 +4303,52 @@
         }
 
         console.log("IceShield: Address fields filled with", identity.isUS ? "US" : "international", "address");
-    }
-
-    // Function to fill the "Where are you reporting from?" section
+    }    // Function to fill the "Where are you reporting from?" section
     function fillReportingLocation() {
         console.log("IceShield: Filling reporting location section");
 
         // Find the radio buttons for "Inside the U.S." and "Outside of the U.S."
-        const insideUSRadio = document.querySelector('input[name="where_are_you_reporting_from_radios"][value="INSIDE"]');
-        const outsideUSRadio = document.querySelector('input[name="where_are_you_reporting_from_radios"][value="OUTSIDE"]');
-
-        // Randomly select inside (80%) or outside (20%) of US
-        const isInsideUS = Math.random() < 0.8;
-
-        // Select the appropriate radio button
+        // Try multiple selector approaches to find the radio buttons
+        let insideUSRadio = document.querySelector('input[name="where_are_you_reporting_from_radios"][value="INSIDE"]');
+        let outsideUSRadio = document.querySelector('input[name="where_are_you_reporting_from_radios"][value="OUTSIDE"]');
+        
+        // If not found with the first approach, try using the IDs from the provided HTML
+        if (!insideUSRadio) {
+            insideUSRadio = document.querySelector('input[id*="edit-where-are-you-reporting-from-radios-inside"]');
+        }
+        if (!outsideUSRadio) {
+            outsideUSRadio = document.querySelector('input[id*="edit-where-are-you-reporting-from-radios-outside"]');
+        }
+        
+        // If still not found, try looking for radio buttons with labels containing the text
+        if (!insideUSRadio || !outsideUSRadio) {
+            const allRadios = document.querySelectorAll('input[type="radio"]');
+            for (const radio of allRadios) {
+                const label = radio.labels ? radio.labels[0] : null;
+                const labelText = label ? label.textContent.trim() : '';
+                
+                if (labelText.includes('Inside the U.S.') && !insideUSRadio) {
+                    insideUSRadio = radio;
+                } else if ((labelText.includes('Outside of the U.S.') || labelText.includes('Outside the U.S.')) && !outsideUSRadio) {
+                    outsideUSRadio = radio;
+                }
+            }
+        }        // Randomly select inside (99%) or outside (1%) of US as requested
+        const isInsideUS = Math.random() < 0.99;// Select the appropriate radio button
         if (insideUSRadio && isInsideUS) {
             insideUSRadio.checked = true;
             triggerInputEvent(insideUSRadio);
-            console.log("IceShield: Selected 'Inside the U.S.' reporting location");
+            console.log("IceShield: Selected 'Inside the U.S.' reporting location (99% probability)");
         } else if (outsideUSRadio && !isInsideUS) {
             outsideUSRadio.checked = true;
             triggerInputEvent(outsideUSRadio);
-            console.log("IceShield: Selected 'Outside of the U.S.' reporting location");
+            console.log("IceShield: Selected 'Outside of the U.S.' reporting location (1% probability)");
         } else {
             console.log("IceShield: Could not find reporting location radio buttons");
+            // Log which radio buttons were found for debugging
+            if (insideUSRadio) console.log("IceShield: Found insideUSRadio");
+            if (outsideUSRadio) console.log("IceShield: Found outsideUSRadio");
+            console.log("IceShield: Selection was for:", isInsideUS ? "Inside U.S." : "Outside U.S.");
         }
 
         // Wait longer for the form to update based on radio selection (500ms instead of 300ms)
@@ -4399,15 +4384,17 @@
                 console.log("IceShield: Filled reporter city:", reporterAddress.city);
             } else {
                 console.log("IceShield: Reporter city field not found");
-            }
-
-            if (zipField) {
-                zipField.value = reporterAddress.zip;
+            }            if (zipField) {
+                // Ensure zip code is exactly 5 digits and numeric only (override international postal codes)
+                const zipCode = reporterAddress.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+                // Truncate if longer than 5 digits
+                const formattedZip = zipCode.substring(0, 5);
+                zipField.value = formattedZip;
                 triggerInputEvent(zipField);
-                console.log("IceShield: Filled reporter zip code:", reporterAddress.zip);
+                console.log("IceShield: Filled reporter zip code (5-digit override):", formattedZip);
             } else {
                 console.log("IceShield: Reporter zip code field not found");
-            }            // Handle state/country selection based on inside/outside US selection
+            }// Handle state/country selection based on inside/outside US selection
             if (isInsideUS) {
                 // For inside US, select a state
                 const stateField = document.querySelector('select[data-drupal-selector="edit-state"], select[name="state"]');
@@ -5107,12 +5094,14 @@
             businessCityField.value = businessAddress.city;
             triggerInputEvent(businessCityField);
             console.log("IceShield: Filled business city");
-        }
-
-        if (businessZipField) {
-            businessZipField.value = businessAddress.zip;
+        }        if (businessZipField) {
+            // Ensure zip code is exactly 5 digits and numeric only
+            const zipCode = businessAddress.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+            // Truncate if longer than 5 digits
+            const formattedZip = zipCode.substring(0, 5);
+            businessZipField.value = formattedZip;
             triggerInputEvent(businessZipField);
-            console.log("IceShield: Filled business zip");
+            console.log("IceShield: Filled business zip code:", formattedZip);
         }
 
         // Find and fill the business state field - use exact selector from HTML
@@ -5234,11 +5223,14 @@
 
             if (!businessZipField) {
                 for (const label of zipLabels) {
-                    const found = findInputByLabel(label);
-                    if (found) {
+                    const found = findInputByLabel(label);                    if (found) {
                         businessZipField = found;
                         console.log("IceShield: Found business zip field by label:", label);
-                        businessZipField.value = businessAddress.zip;
+                        // Ensure zip code is exactly 5 digits and numeric only
+                        const zipCode = businessAddress.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+                        // Truncate if longer than 5 digits
+                        const formattedZip = zipCode.substring(0, 5);
+                        businessZipField.value = formattedZip;
                         triggerInputEvent(businessZipField);
                         break;
                     }
@@ -5279,13 +5271,15 @@
                         triggerInputEvent(businessStateField);
                     }
                     console.log("IceShield: Filled business state using visible text detection");
-                }
-
-                if (!businessZipField && visibleFields.zip) {
+                }                if (!businessZipField && visibleFields.zip) {
                     businessZipField = visibleFields.zip;
-                    businessZipField.value = businessAddress.zip;
+                    // Ensure zip code is exactly 5 digits and numeric only
+                    const zipCode = businessAddress.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+                    // Truncate if longer than 5 digits
+                    const formattedZip = zipCode.substring(0, 5);
+                    businessZipField.value = formattedZip;
                     triggerInputEvent(businessZipField);
-                    console.log("IceShield: Filled business zip using visible text detection");
+                    console.log("IceShield: Filled business zip code using visible text detection:", formattedZip);
                 }
             }
         }        console.log("IceShield: Business information filled");
@@ -5623,11 +5617,14 @@
 
             if (!individualZipField) {
                 for (const label of zipLabels) {
-                    const found = findInputByLabel(label);
-                    if (found) {
+                    const found = findInputByLabel(label);                    if (found) {
                         individualZipField = found;
                         console.log("IceShield: Found individual zip field by label:", label);
-                        individualZipField.value = address.zip;
+                        // Ensure zip code is exactly 5 digits and numeric only
+                        const zipCode = address.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+                        // Truncate if longer than 5 digits
+                        const formattedZip = zipCode.substring(0, 5);
+                        individualZipField.value = formattedZip;
                         triggerInputEvent(individualZipField);
                         break;
                     }
@@ -5698,13 +5695,15 @@
                         triggerInputEvent(individualStateField);
                     }
                     console.log("IceShield: Filled individual state using visible text detection");
-                }
-
-                if (!individualZipField && visibleFields.zip) {
+                }                if (!individualZipField && visibleFields.zip) {
                     individualZipField = visibleFields.zip;
-                    individualZipField.value = address.zip;
+                    // Ensure zip code is exactly 5 digits and numeric only
+                    const zipCode = address.zip.toString().replace(/[^0-9]/g, '').padStart(5, '0');
+                    // Truncate if longer than 5 digits
+                    const formattedZip = zipCode.substring(0, 5);
+                    individualZipField.value = formattedZip;
                     triggerInputEvent(individualZipField);
-                    console.log("IceShield: Filled individual zip using visible text detection");
+                    console.log("IceShield: Filled individual zip code using visible text detection:", formattedZip);
                 }
             }
         }
