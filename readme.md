@@ -18,13 +18,13 @@ IceShield was created in response to the growing threat of state-sponsored repor
 - **Approxamate age generation** generates a random age 18-90
 - **Advanced email generator** creates believable email addresses using 24+ different naming patterns based on personal info.
 - **Valid U.S. phone numbers** using **real area codes** to pass basic verification checks.
-- **Realistic Valid residential addresses**  
+- **Thousands of realistic addresses** across all U.S. states for maximum geographic diversity
 
 ### 🏛️ Immigration Violation Category Support
   - **20+ violation types** including Benefit/Marriage Fraud, Human Trafficking, Employment Violations, Student Visa Violations, and more
   - **Specialized fraud subcategories** with detailed options for Benefit/Marriage Fraud (Asylum/Refugee, H-1B, Student Visa, K-1 Marriage, etc.)
   - **"Other" violation handling** with realistic immigration-related violation descriptions
-  - **Criminal activity narratives** tailored to each violation type for authentic submissions
+  - **Thousands of criminal activity narratives** with immense variety, tailored to each violation type for authentic submissions
 
 ### 🏢 Violator Information Processing
   - **Multi-type violator support**: Business/Company (20%), Individual (75%), Both (5%) selection distribution
@@ -34,7 +34,7 @@ IceShield was created in response to the growing threat of state-sponsored repor
 
 ### 📝 Immigration Reporting Form Support
 - **Personal information fields**: First name, last name, email, phone number with realistic data generation
-- **Reporter location handling**: Automatic detection and filling of "Where are you reporting from?" sections
+- **Reporter location handling**: Automatic detection and filling of "Where are you reporting from?" sections (always selects "Inside the U.S.")
 - **Criminal activity location**: Geographic data for where alleged violations occurred
 - **Previous submission tracking**: Handles questions about prior law enforcement reporting
 - **Additional reporting questions**: Manages fields for reporting multiple violators or businesses
@@ -57,6 +57,18 @@ IceShield was created in response to the growing threat of state-sponsored repor
 - **reCAPTCHA v2/v3 support** with automated token insertion
 - **Fallback manual mode** when automated solving fails
 - **API key management** using browser local storage
+
+---
+
+## 🔄 Recent Updates
+
+### Version 1.1 Improvements
+- **🎭 Massive Narrative Expansion**: Added thousands of additional criminal violation descriptions with immense variety, each tailored to match specific violation types for maximum authenticity
+- **🏠 Enhanced Address Database**: Expanded with hundreds of new realistic residential and business addresses across all U.S. states
+- **🇺🇸 Reporting Location Fix**: Resolved issue where script was incorrectly selecting "Outside the U.S." - now **always selects "Inside the U.S."** for proper form handling
+- **📦 Self-Contained Script**: Fixed external file dependency issues - script now operates completely standalone with all required data embedded internally
+- **🛠️ General Bug Fixes**: Resolved formatting issues, improved form field detection, and enhanced overall script stability
+- **⚡ Performance Optimizations**: Streamlined code execution and reduced resource usage for faster, more reliable operation
 
 ---
 
