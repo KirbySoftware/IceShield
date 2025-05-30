@@ -83,7 +83,7 @@ To protect your identity while using IceShield, **always** connect through a VPN
    
      
 2: Click the "**Install IceShield**" button to install the script!
-    [![Install IceShield](https://img.shields.io/badge/Install%20IceShield-Userscript-blue?logo=Tampermonkey)](https://cdn.jsdelivr.net/gh/kirbysoftware/iceshield@main/IceShield-V1.0.Hotfix.user.js)
+    [![Install IceShield](https://img.shields.io/badge/Install%20IceShield-Userscript-blue?logo=Tampermonkey)](https://cdn.jsdelivr.net/gh/kirbysoftware/iceshield@main/IceShield-V1.1.user.js)
 
 3: **Configure Captcha API** (optional but recommended for automation):
    - Click "Captcha API Config" in the IceShield panel
