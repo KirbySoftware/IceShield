@@ -134,8 +134,6 @@ The script automatically handles:
 IceShield has been in development for serveral weeks and is still in active development. 
 
 - **CAPTCHA dependency**: Manual input required when API solving fails
-- **Form-specific compatibility**: Some immigration forms may need custom field detection
-- **Rate limiting**: Some sites may temporarily block rapid submissions
 - **Age field handling**: System always selects "Approximate Age" to avoid DOB field errors
 
 ---
